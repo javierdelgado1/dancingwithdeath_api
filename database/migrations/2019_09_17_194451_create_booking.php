@@ -16,6 +16,7 @@ class CreateBooking extends Migration
         Schema::create('booking', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('date');
+            $table->string('contact_email');
             $table->unsignedBigInteger('available_hours_id');
             $table->foreign('available_hours_id')->references('id')->on('available_hours');
             $table->unsignedBigInteger('user_id');

@@ -28,7 +28,7 @@ class ResponseController extends Controller
         }
         if ($type == "exits" && $action == "save") {
             $response['status'] = "error";
-            $response['message'] = "An equal record already exists";
+            $response['message'] = "The death has an appointment at this time, I'm sorry, try another time";
             return $response;
         }
         if ($type == "success" && $action == "updated") {

@@ -55,7 +55,9 @@ class BookingController extends Controller
         if($validator->fails()) {
             return response()->json($this->response->response("error", "save",  $validator->errors()->all()),500);
         }
-        $booking = Booking::where('date', $request->date)->where('available_hours_id', $request->hour_id)->first();
+        $booking = Booking::where('date', $request->date)
+                            ->where('available_hours_id', $request->hour_id)
+                                    ->first();
         $is_valid_date = Carbon::parse($request->date); 
         if(!$is_valid_date->isWeekday())
             return response()->json($this->response->response("error", "show", "Invalid date, death only dances on weekdays"), 200);
@@ -132,8 +134,19 @@ class BookingController extends Controller
         if(!$is_valid_date->isWeekday())
             return response()->json($this->response->response("error", "show", "Invalid date, death only dances on weekdays"), 200);
             
-        $booking_exits = Booking::where('date', $request->date)->where('available_hours_id', $request->hour_id)->first();
-        if(!$booking_exits)
+        $booking_exits = Booking::where('date', $request->date)
+                                    ->where('available_hours_id', $request->hour_id)
+                                            ->first();
+        if(($booking->contact_email != $request->email) && $booking_exits){
+            $booking->date = $request->date;
+            $booking->contact_email = $request->email;
+            $booking->available_hours_id= $request->hour_id;
+            $booking->user_id =$request->user()->id;
+            $booking->save();
+            return response()->json($this->response->response("success", "updated",   $booking),200);
+            
+        }
+        if(($booking->contact_email == $request->email) && !$booking_exits)
         {
             $booking->date = $request->date;
             $booking->contact_email = $request->email;
@@ -143,6 +156,7 @@ class BookingController extends Controller
             return response()->json($this->response->response("success", "updated",   $booking),200);
         }
         return response()->json($this->response->response("exits", "save",   $booking),200);
+
     }
 
     /**
